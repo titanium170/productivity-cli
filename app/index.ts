@@ -1,4 +1,6 @@
-import figlet from "figlet";
+#! /usr/bin/env bun
+
+
 import { program } from 'commander';
 import { LocalFile } from "./persistence/local-file";
 import SetList from "./core/models/set-list";
@@ -20,7 +22,7 @@ program
             return;
         }
         await persister.save(setList);
-        console.log(ListSets(setList));
+        console.table(ListSets(setList));
     });
 
 program.command('add')
@@ -78,7 +80,7 @@ program.command('go')
 program.command('list')
     .description('lists sets')
     .action(() => {
-        console.log(ListSets(setList));
+        console.table(ListSets(setList));
     });
 
 (async () => {
