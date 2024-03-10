@@ -1,10 +1,14 @@
 {
   "name": "productivity-cli",
-  "baseURL": "./app",
-  "module": "index.ts",
+  "version": "1.0.0",
+  "main": "app/index.ts",
   "type": "module",
   "scripts": {
-    "start": "bun run app/index.ts"
+    "start": "bun run app/index.ts",
+    "build": "bunx tsc"
+  },
+  "bin": {
+    "pdc": "app/index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
