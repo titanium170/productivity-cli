@@ -1,2 +1,7 @@
-Not persisting active set
 fix git history
+allow moving around of sets
+allow insertion of sets
+add timer (done)
+figure out how to persist timer
+implement alert using node notifier
+pause music on break

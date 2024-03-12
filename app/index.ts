@@ -4,13 +4,16 @@
 import { program } from 'commander';
 import { LocalFile } from "./persistence/local-file";
 import SetList from "./core/models/set-list";
-import AddObjectiveToSet from "./core/actions/add-objective-to-set";
-import RemoveSets from "./core/actions/remove-sets";
-import ChangeActiveSet from "./core/actions/change-active-set";
-import ListSets from "./core/actions/list-sets";
+import addObjectiveToSetAction from "./core/actions/add-objective-to-set";
+import removeSetsAction from "./core/actions/remove-sets";
+import changeActiveSetAction from "./core/actions/change-active-set";
+import listSetsAction from "./core/actions/list-sets";
+import addSetsAction from './core/actions/add-sets';
+import { TimerManager } from './core/timer/time-manager';
 
 const persister = new LocalFile();
 let setList = new SetList();
+const timer = new TimerManager();
 
 
 program
@@ -22,7 +25,7 @@ program
             return;
         }
         await persister.save(setList);
-        console.table(ListSets(setList));
+        console.table(listSetsAction(setList));
     });
 
 program.command('add')
@@ -30,11 +33,7 @@ program.command('add')
     // .option('-e, --end', 'adds the set to the end')
     .option('-n, --number <n>', 'adds n number of sets')
     .action((options) => {
-        if (options.number) {
-            setList.addSets(+options.number);
-        } else {
-            setList.add();
-        }
+        addSetsAction(setList, +options.number ?? 1, timer);
     });
 
 
@@ -44,7 +43,7 @@ program.command('rm')
     .option('-n, --number <n>', 'removes n number of sets')
     .action((arg, options) => {
         if (options.number) {
-            RemoveSets(setList, +options.number)
+            removeSetsAction(setList, +options.number)
         } else {
             setList.remove(+arg);
         }
@@ -55,7 +54,7 @@ program.command('task')
     .description('adds a task')
     .argument('<name>', 'adds task')
     .action((arg) => {
-        AddObjectiveToSet(setList.active() ?? setList.add(), arg);
+        addObjectiveToSetAction(setList.active() ?? setList.add(), arg);
     });
 
 program.command('next')
@@ -74,13 +73,13 @@ program.command('go')
     .description('sets active to index')
     .argument('<id>', 'id of set to choose')
     .action((arg) => {
-        ChangeActiveSet(setList, +arg);
+        changeActiveSetAction(setList, +arg);
     });
 
 program.command('list')
     .description('lists sets')
     .action(() => {
-        console.table(ListSets(setList));
+        console.table(listSetsAction(setList));
     });
 
 (async () => {

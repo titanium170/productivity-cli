@@ -1,6 +1,6 @@
 import type SetList from "../models/set-list";
 
-export default function ListSets(setList: SetList) {
+export default function listSetsAction(setList: SetList) {
 
     const list = setList.list();
     const active = setList.active()?.id
