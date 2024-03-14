@@ -69,15 +69,6 @@ export default class SetList {
         return true;
     }
 
-    addSets(n: number): WorkSet[] {
-        const newSets = [];
-        for (let i = 0; i < n; i++) {
-            newSets.push(this.add());
-        }
-
-        return newSets;
-    }
-
 
     // arguably could remove these two
     toJson(): string {

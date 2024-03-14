@@ -22,5 +22,19 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
+    // Custom config
+    "strictNullChecks": true,
+    "baseUrl": ".",
+    "paths": {
+      "@core/*": [
+        "app/core/*"
+      ],
+      "@persistence/*": [
+        "app/persistence/*"
+      ]
+    },
+    "types": [
+      "node-ipc"
+    ]
   }
 }

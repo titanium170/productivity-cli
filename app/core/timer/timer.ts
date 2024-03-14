@@ -1,83 +1,116 @@
-// timer.ts
+type Milliseconds = number;
+
 interface TimerOptions {
-    duration: number;
-    blockId: number;
+    duration: Milliseconds;
     type: TimerType;
 }
 
+// doesnt handle case where timer is lost
+interface ITimer {
+    kill: () => Milliseconds,
+    remainingTime: () => Milliseconds
+};
+
 export type TimerType = "focus" | "break";
 
-export class Timer {
-    private remainingTime: number;
-    private timerId?: globalThis.Timer;
-    private readonly blockId: number;
+export default class Timer {
+    private remainingTime: Milliseconds;
+    private duration: Milliseconds;
+    private timer: ITimer | null = null;
+    private callback: () => void;
     public readonly type: TimerType;
+    public complete: boolean = false;
 
-    constructor({ duration, blockId, type }: TimerOptions) {
-        this.remainingTime = duration;
-        this.blockId = blockId;
-        this.type = type;
+
+    constructor(callback: () => void, options: TimerOptions) {
+        this.duration = options.duration;
+        this.remainingTime = options.duration;
+        this.type = options.type;
+        this.callback = callback;
     }
 
-    private notifyExternalAPI(): void {
-        // Mocking external API call
-        console.log(`API call for ${this.type} timer completed for block ${this.blockId}`);
-    }
 
     public play(): void {
-        if (this.timerId) {
-            return;
+        if (this.complete) {
+            throw new Error('Trying to play complete timer')
         }
 
         this.startTimer();
     }
 
     public pause(): void {
-        if (this.timerId) {
-            clearInterval(this.timerId);
-            this.timerId = undefined;
-            console.log(`Timer paused for block ${this.blockId}`);
+        if (this.timer) {
+            this.remainingTime = this.timer.kill();
+            this.timer = null;
         }
     }
 
     public reset(): void {
         this.pause();
-        this.remainingTime = this.type === "focus" ? 25 * 60 * 1000 : 5 * 60 * 1000;
-        console.log(`Timer reset for block ${this.blockId}`);
+        this.remainingTime = this.duration;
+        this.complete = false;
     }
 
     public skip(): void {
         this.onComplete();
     }
 
-    private startTimer(): void {
-        this.timerId = setInterval(() => {
-            this.remainingTime -= 1000;
-
-            if (this.remainingTime <= 0) {
-                this.onComplete();
-            }
-        }, 1000);
+    public isRunning(): boolean {
+        return !!this.timer;
     }
 
+    public getRemainingTime(): Milliseconds {
+        if (this.complete) {
+            return 0;
+        }
+
+        if (this.timer) {
+            return this.timer.remainingTime();
+        }
+
+        return this.remainingTime;
+    }
+
+    private startTimer(): void {
+        this.timer = new IntervalTimer(this.remainingTime, () => this.onComplete());
+    }
 
     private onComplete(): void {
         this.pause();
         this.remainingTime = 0;
-        this.notifyExternalAPI();
-
-        if (this.type === "focus") {
-            // Focus timer completed, start the break timer
-            const breakTimer = new Timer({
-                duration: 5 * 60 * 1000,
-                blockId: this.blockId,
-                type: "break",
-            });
-            breakTimer.play();
-            clearInterval(this.timerId);
-        }
+        this.complete = true;
+        this.callback();
     }
-
-
 }
 
+
+// should not exist unless timer is running
+class IntervalTimer implements ITimer {
+    internalTime: Milliseconds;
+    interval: globalThis.Timer;
+    tickRate: Milliseconds = Bun.env.NODE_ENV == 'test' ? 100 : 1000;
+    onComplete: () => void;
+
+    constructor(duration: Milliseconds, onComplete: () => void) {
+        this.internalTime = duration;
+        this.onComplete = onComplete;
+        this.interval = setInterval(() => { this.onTick() }, this.tickRate);
+    }
+
+    public kill(): Milliseconds {
+        clearInterval(this.interval);
+        return this.internalTime;
+    }
+
+    public remainingTime(): Milliseconds {
+        return this.internalTime;
+    }
+
+    private onTick(): void {
+        this.internalTime -= this.tickRate;
+        if (this.internalTime <= 0) {
+            clearInterval(this.interval);
+            this.onComplete();
+        }
+    }
+}
