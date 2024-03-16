@@ -1,6 +1,6 @@
 
 import { program } from 'commander';
-import HttpClient from 'app/http-client';
+import HttpClient from '@client/http-client';
 
 // find out how to save these in process memory
 

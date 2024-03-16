@@ -1,7 +1,9 @@
 fix git history
 allow moving around of sets
 allow insertion of sets
-add timer (done)
+allow completion of tasks
+allow deletion of tasks
+investigate using tRPC
 figure out how to persist timer
 implement alert using node notifier
 pause music on break

@@ -31,7 +31,10 @@
       ],
       "@persistence/*": [
         "app/persistence/*"
-      ]
+      ],
+      "@client/*": [
+        "app/client/*"
+      ],
     },
     "types": [
       "bun"
