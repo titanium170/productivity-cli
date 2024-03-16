@@ -8,8 +8,8 @@ import changeActiveSetAction from "@core/actions/change-active-set";
 export class SetListAPI implements ISetListActions {
     private setList: SetList;
 
-    constructor() {
-        this.setList = new SetList();
+    constructor(setList?: SetList) {
+        this.setList = setList ?? new SetList();
     }
 
     addSet(): SetList {

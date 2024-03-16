@@ -34,7 +34,7 @@
       ]
     },
     "types": [
-      "node-ipc"
+      "bun"
     ]
   }
 }
