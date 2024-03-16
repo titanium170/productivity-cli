@@ -84,7 +84,7 @@ program.command('list')
     .description('lists sets')
     .action(async () => {
         const setList = await HttpClient.get('list');
-        console.table(setList);
+        console.table(JSON.parse(setList));
     });
 
 export const runProgram = async () => {
