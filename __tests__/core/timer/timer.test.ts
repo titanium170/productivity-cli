@@ -3,12 +3,12 @@ import Timer from '@core/timer/timer';
 import { sleep } from 'bun';
 
 test('plays timer', () => {
-    const timer = new Timer(() => { }, { duration: 1000, blockId: 1, type: 'focus' });
+    const timer = new Timer(() => { }, { duration: 1000, type: 'focus' });
     expect(() => timer.play()).not.toThrow();
 });
 
 test('tracks remaining time', async () => {
-    const timer = new Timer(() => { }, { duration: 1000, blockId: 1, type: 'focus' });
+    const timer = new Timer(() => { }, { duration: 1000, type: 'focus' });
     timer.play();
 
     // hack so I don't need to add jest
@@ -18,9 +18,20 @@ test('tracks remaining time', async () => {
     expect(timer.getRemainingTime()).toBe(900);
 });
 
+test('play does nothing if timer is not paused', async () => {
+    const timer = new Timer(() => { }, { duration: 1000, type: 'focus' });
+    timer.play();
+
+    // hack so I don't need to add jest
+    // (bun hasn't implemented fakeTimers)
+    await sleep(100);
+
+    timer.play();
+    expect(timer.getRemainingTime()).toBe(900);
+})
 
 test('pauses timer', async () => {
-    const timer = new Timer(() => { }, { duration: 1000, blockId: 1, type: 'focus' });
+    const timer = new Timer(() => { }, { duration: 1000, type: 'focus' });
     timer.play();
     timer.pause();
 
@@ -32,7 +43,7 @@ test('pauses timer', async () => {
 });
 
 test('resets timer', async () => {
-    const timer = new Timer(() => { }, { duration: 1000, blockId: 1, type: 'focus' });
+    const timer = new Timer(() => { }, { duration: 1000, type: 'focus' });
     timer.play();
 
     // hack so I don't need to add jest
@@ -45,7 +56,7 @@ test('resets timer', async () => {
 });
 
 test('tracks timer status', () => {
-    const timer = new Timer(() => { }, { duration: 1000, blockId: 1, type: 'focus' });
+    const timer = new Timer(() => { }, { duration: 1000, type: 'focus' });
 
     timer.play();
     expect(timer.isRunning()).toBe(true);
@@ -54,7 +65,7 @@ test('tracks timer status', () => {
 });
 
 test('skips timer', () => {
-    const timer = new Timer(() => { }, { duration: 1000, blockId: 1, type: 'focus' });
+    const timer = new Timer(() => { }, { duration: 1000, type: 'focus' });
     timer.skip();
 
     expect(timer.complete).toBe(true);
@@ -65,7 +76,7 @@ test('skips timer', () => {
 
 test('signals when complete', async () => {
     const callback = mock(() => { });
-    const timer = new Timer(callback, { duration: 1000, blockId: 1, type: 'focus' });
+    const timer = new Timer(callback, { duration: 1000, type: 'focus' });
     timer.play();
     await sleep(1100);
 

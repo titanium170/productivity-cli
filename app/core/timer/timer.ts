@@ -35,6 +35,10 @@ export default class Timer {
             throw new Error('Trying to play complete timer')
         }
 
+        if (this.isRunning()) {
+            return;
+        }
+
         this.startTimer();
     }
 
@@ -52,7 +56,9 @@ export default class Timer {
     }
 
     public skip(): void {
-        this.onComplete();
+        this.pause();
+        this.remainingTime = 0;
+        this.complete = true;
     }
 
     public isRunning(): boolean {

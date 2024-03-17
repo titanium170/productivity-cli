@@ -16,7 +16,7 @@ be the fastest way to interact with my app, no need for frills.
 
 This allows me to model my ideal interaction, which is wherever I am on my PC, I can simply press:
 1. `Alt + Space` - which brings up PowerToys `Run`
-2. `>pdc <command>` - which opens and runs the command in `cmd`, which opens a batch file which calls my node binary inside WSL
+2. `>pdc <command>` - which opens and runs the command in Terminal, which opens a batch file which calls my node binary inside WSL
 
 Ideally PowerToys would support running commands directly from WSL, but alas not yet.
 

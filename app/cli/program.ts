@@ -2,8 +2,6 @@
 import { program } from 'commander';
 import HttpClient from '@client/http-client';
 
-// find out how to save these in process memory
-
 program
     .version("1.0.0")
     .name('prod-util')
@@ -87,7 +85,36 @@ program.command('list')
         console.table(JSON.parse(setList));
     });
 
+program.command('play')
+    .description('play the timer if paused')
+    .action(async () => {
+        const response = await HttpClient.post('play');
+        console.log(JSON.parse(response));
+    });
+
+program.command('pause')
+    .description('pause the timer if not paused')
+    .action(async () => {
+        const response = await HttpClient.post('pause');
+        console.log(JSON.parse(response));
+    });
+
+program.command('reset')
+    .description('reset the timer')
+    .action(async () => {
+        const response = await HttpClient.post('reset');
+        console.log(JSON.parse(response));
+    });
+
+program.command('skip')
+    .description('skip to the next break/focus timer')
+    .action(async () => {
+        const response = await HttpClient.post('skipTimer');
+        console.log(JSON.parse(response));
+    });
+
+
+
 export const runProgram = async () => {
-    // setList = await persister.load();
     await program.parseAsync();
 };

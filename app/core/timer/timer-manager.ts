@@ -1,5 +1,13 @@
 import Timer, { type TimerType } from './timer';
 
+export type TimerState = {
+    /** Remaining time in milliseconds */
+    remaining: number,
+    paused: boolean,
+    type: TimerType
+}
+
+
 export default class TimerManager {
     private currentTimer: Timer;
     private focusTimer: Timer;
@@ -54,6 +62,14 @@ export default class TimerManager {
         this.nextTimer();
     }
 
+    public timerState(): TimerState {
+        return {
+            remaining: this.currentTimer.getRemainingTime(),
+            paused: !this.currentTimer.isRunning(),
+            type: this.currentTimer.type
+        };
+    }
+
     private nextTimer(): void {
         if (!this.currentTimer || this.currentTimer.type === 'break') {
             this.currentTimer = this.focusTimer;
@@ -61,6 +77,7 @@ export default class TimerManager {
             this.currentTimer = this.breakTimer;
         }
 
+        this.currentTimer.reset();
         this.currentTimer!.play()
     }
 

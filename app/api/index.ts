@@ -1,6 +1,6 @@
 import SetList from '@core/models/set-list'
 import { SetListAPI } from './set-list-api';
-import { TimerAPI } from './timer-api';
+import { TimerAPI, type TimerState } from './timer-api';
 
 export interface IPDC {
     setList: ISetListActions,
@@ -19,10 +19,10 @@ export interface ISetListActions {
 }
 
 export interface ITimerActions {
-    skipTimer: () => void,
-    play: () => void,
-    pause: () => void,
-    reset: () => void,
+    skipTimer: () => TimerState,
+    play: () => TimerState,
+    pause: () => TimerState,
+    reset: () => TimerState,
 }
 
 
@@ -67,20 +67,20 @@ export default class API implements IPDC {
         return this.setList.list();
     }
 
-    public play(): void {
-        this.timerManager.play();
+    public play(): TimerState {
+        return this.timerManager.play();
     }
 
-    public pause(): void {
-        this.timerManager.pause();
+    public pause(): TimerState {
+        return this.timerManager.pause();
     }
 
-    public reset(): void {
-        this.timerManager.reset();
+    public reset(): TimerState {
+        return this.timerManager.reset();
     }
 
-    public skipTimer(): void {
-        this.timerManager.skipTimer();
+    public skipTimer(): TimerState {
+        return this.timerManager.skipTimer();
     }
 }
 

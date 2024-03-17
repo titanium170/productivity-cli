@@ -5,10 +5,23 @@ import API from "./api";
 import figlet from "figlet";
 import { formatSetList } from "./helpers";
 import { LocalFile } from "@persistence/local-file";
+import SetList from "@core/models/set-list";
+import { type TimerState } from "@core/timer/timer-manager";
+
+
 
 const persister = new LocalFile();
 const setList = await persister.load();
 const apiInstance = new API(setList);
+
+type Route = [string, Function];
+
+const timerAPIRoutes: Route[] = [
+    ['play', apiInstance.play.bind(apiInstance)],
+    ['pause', apiInstance.pause.bind(apiInstance)],
+    ['reset', apiInstance.reset.bind(apiInstance)],
+    ['skip_timer', apiInstance.skipTimer.bind(apiInstance)],
+];
 
 const routeMap = new Map<string, Function>([
     ['', () => ({ message: 'Please choose a valid route', data: {} })],
@@ -20,13 +33,10 @@ const routeMap = new Map<string, Function>([
     ['previous', apiInstance.previous.bind(apiInstance)],
     ['set_active', apiInstance.setActive.bind(apiInstance)],
     ['list', apiInstance.list.bind(apiInstance)],
-    ['play', apiInstance.play.bind(apiInstance)],
-    ['pause', apiInstance.pause.bind(apiInstance)],
-    ['reset', apiInstance.reset.bind(apiInstance)],
-    ['skip_timer', apiInstance.skipTimer.bind(apiInstance)],
+    ...timerAPIRoutes
 ]);
 
-const getResultFromHandler = (handler: Function, requestArgs: object) => {
+const getResultFromHandler = (handler: Function, requestArgs: object): string => {
     let result;
     if (requestArgs && Object.keys(requestArgs).length) {
         result = handler(...Object.values(requestArgs));
@@ -34,9 +44,13 @@ const getResultFromHandler = (handler: Function, requestArgs: object) => {
         result = handler();
     }
 
-    const res = JSON.stringify(formatSetList(result));
-    console.log({ res });
-    return res;
+    if (result instanceof SetList) {
+        result = formatSetList(result);
+    } else if ('remaining' in result) {
+        result.remaining = Math.floor(result.remaining / 1000 / 60) + ' minutes';
+    }
+
+    return JSON.stringify(result);
 }
 
 const port = '3000';
@@ -56,6 +70,7 @@ serve({
         if (handler) {
             const res = getResultFromHandler(handler, reqJson);
             await persister.save(setList);
+            console.log({ res });
             return new Response(JSON.stringify(res), { status: 200 });
         }
 
