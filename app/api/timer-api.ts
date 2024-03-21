@@ -1,8 +1,14 @@
 import TimerManager, { type TimerState } from "@core/timer/timer-manager";
+import Timer from "@core/timer/timer";
 import type { ITimerActions } from ".";
+import notifier from 'node-notifier';
 
 export class TimerAPI implements ITimerActions {
-    private timer: TimerManager = new TimerManager();
+    private timer: TimerManager;
+
+    constructor() {
+        this.timer = new TimerManager(() => { });
+    }
 
     public skipTimer(): TimerState {
         this.timer.skipTimer();
@@ -23,4 +29,9 @@ export class TimerAPI implements ITimerActions {
         this.timer.reset();
         return this.timer.timerState();
     }
+
+    public timerState(): TimerState {
+        return this.timer.timerState();
+    }
+
 }

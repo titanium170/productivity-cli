@@ -12,8 +12,10 @@ export default class TimerManager {
     private currentTimer: Timer;
     private focusTimer: Timer;
     private breakTimer: Timer;
+    private timerCompleteCallback: (timer: Timer) => void;
 
-    constructor() {
+    constructor(onTimerComplete: (timer: Timer) => void) {
+        this.timerCompleteCallback = onTimerComplete;
         this.focusTimer = this.createTimer('focus');
         this.breakTimer = this.createTimer('break');
         this.currentTimer = this.focusTimer;
@@ -58,7 +60,7 @@ export default class TimerManager {
     }
 
     public onTimerComplete(type: TimerType): void {
-        this[`${type}Timer`]?.reset();
+        this.timerCompleteCallback(this.currentTimer);
         this.nextTimer();
     }
 

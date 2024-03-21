@@ -16,11 +16,15 @@ const apiInstance = new API(setList);
 
 type Route = [string, Function];
 
+
+// TODO: 
+// map function names automatically instead of manual string entry
 const timerAPIRoutes: Route[] = [
     ['play', apiInstance.play.bind(apiInstance)],
     ['pause', apiInstance.pause.bind(apiInstance)],
     ['reset', apiInstance.reset.bind(apiInstance)],
     ['skip_timer', apiInstance.skipTimer.bind(apiInstance)],
+    ['get_timer', apiInstance.getTimer.bind(apiInstance)],
 ];
 
 const routeMap = new Map<string, Function>([
@@ -46,8 +50,6 @@ const getResultFromHandler = (handler: Function, requestArgs: object): string =>
 
     if (result instanceof SetList) {
         result = formatSetList(result);
-    } else if ('remaining' in result) {
-        result.remaining = Math.floor(result.remaining / 1000 / 60) + ' minutes';
     }
 
     return JSON.stringify(result);
@@ -71,7 +73,17 @@ serve({
             const res = getResultFromHandler(handler, reqJson);
             await persister.save(setList);
             console.log({ res });
-            return new Response(JSON.stringify(res), { status: 200 });
+            return new Response(
+                JSON.stringify(res),
+                {
+                    status: 200,
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+                        'Access-Control-Allow-Headers': 'X-PINGOTHER, Content-Type',
+                    }
+                }
+            );
         }
 
         return new Response('Not found', { status: 404 });

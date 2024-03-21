@@ -23,6 +23,7 @@ export interface ITimerActions {
     play: () => TimerState,
     pause: () => TimerState,
     reset: () => TimerState,
+    timerState: () => TimerState,
 }
 
 
@@ -65,6 +66,10 @@ export default class API implements IPDC {
 
     public list(): SetList {
         return this.setList.list();
+    }
+
+    public getTimer(): TimerState {
+        return this.timerManager.timerState();
     }
 
     public play(): TimerState {
