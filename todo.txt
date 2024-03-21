@@ -3,5 +3,10 @@ allow insertion of sets
 allow completion of tasks
 allow deletion of tasks
 investigate using tRPC
-implement alert using node notifier
+
+WSL interop:
+Figure out how to use bun:ffi with zig/cpp in windows
+Figure out how to call node scripts in windows
+implement alert (maybe directly or through ^)
 pause music on break
+
